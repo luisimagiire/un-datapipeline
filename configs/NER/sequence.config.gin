@@ -1,0 +1,35 @@
+import pipelines.cleaner
+import pipelines.parser
+import pipelines.validation
+import pipelines.data_source
+import pipelines.text_processors
+import pipelines.ner.sequence
+
+
+base_pipeline.encoder = @SequenceEncoder
+Parser.category_model_path = "models/category"
+Parser.unique_ids = True
+
+#parallel_process.dataset_path = "/home/luis/pojetos/python/un-product-models/dataset/raw/opt_110418/scraps/data_bkp/2018-11-04_data_bkp"
+parallel_process.dataset_path = "dataset"
+parallel_process.pipeline = @base_pipeline
+parallel_process.workers = 2
+parallel_process.reducer = @SequenceReducer
+get_file_paths.market = "ml"
+
+#                                       :::  Text Processing Pipes   :::
+
+valid_advertise.category = "celular-e-telefone"
+valid_advertise.market = "MercadoLivre"
+
+clean_base_advertise.process_pipeline = (@create_clean_text_field, )
+create_clean_text_field.text_process_pipeline = (@full_default_process, )
+
+
+SequenceEncoder.output_folder = "processed/ner_sequence"
+SequenceEncoder.properties_path = "reduced/ner_schema/2019-02-11/parsed_properties.json"
+SequenceEncoder.measure_exceptions = []
+SequenceEncoder.debug = True
+
+SequenceReducer.main_folder = "processed/ner_sequence"
+SequenceReducer.output_folder = "reduced"

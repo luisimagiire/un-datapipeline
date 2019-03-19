@@ -1,0 +1,26 @@
+import pipelines.cleaner
+import pipelines.parser
+import pipelines.validation
+import pipelines.data_source
+import pipelines.text_processors
+import pipelines.ner.mapping
+
+
+clean_pipeline.encoder = @NERMappingEncoder
+Parser.category_model_path = "models/category"
+Parser.unique_ids = True
+
+#parallel_process.dataset_path = "/home/luis/pojetos/python/un-product-models/dataset/raw/opt_110418/scraps/data_bkp/2018-11-04_data_bkp"
+parallel_process.dataset_path = "processed/ner_sequence/2019-02-13"
+#parallel_process.dataset_path = "reduced/2019-02-13/sequence"
+parallel_process.pipeline = @clean_pipeline
+parallel_process.workers = 2
+
+
+NERMappingEncoder.model_folder = "processed/ner_mapping"
+NERMappingEncoder.debug = True
+
+# ::: REDUCER :::
+parallel_process.reducer = @NERMappingReducer
+NERMappingReducer.main_folder = "processed/ner_mapping"
+NERMappingReducer.output_folder = "reduced"

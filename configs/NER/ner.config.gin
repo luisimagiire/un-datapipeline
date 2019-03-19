@@ -1,0 +1,28 @@
+import pipelines.cleaner
+import pipelines.parser
+import pipelines.validation
+import pipelines.data_source
+import pipelines.text_processors
+import pipelines.ner.encoder
+
+
+clean_pipeline.encoder = @NEREncoder
+Parser.category_model_path = "models/category"
+Parser.unique_ids = True
+
+parallel_process.dataset_path = "processed/ner_sequence/2019-02-13"
+parallel_process.pipeline = @clean_pipeline
+parallel_process.workers = 2
+
+
+NEREncoder.model_folder = "processed/ner_encoded"
+NEREncoder.maps_folder = "reduced/2019-02-13/ner_mapping"
+NEREncoder.update_maps = False
+NEREncoder.debug = False
+
+
+# ::: REDUCER :::
+parallel_process.reducer = @NERReducer
+NERReducer.main_folder = "processed/ner_encoded"
+NERReducer.output_folder = "reduced"
+NERReducer.test_perc = 0.2

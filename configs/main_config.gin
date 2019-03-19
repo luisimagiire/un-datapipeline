@@ -1,0 +1,46 @@
+import pipelines.cleaner
+import pipelines.parser
+import pipelines.validation
+import pipelines.data_source
+import pipelines.pricing.pricing_encoder
+import pipelines.mapping.mapping
+import pipelines.text_processors
+
+# Known Encoders ::
+# MappingEncoder
+# PricingEncoder
+
+# MAIN Process Parameters ------------------------------------------------
+
+base_pipeline.encoder = @PricingEncoder
+Parser.category_model_path = "models/category"
+Parser.unique_ids = True
+
+parallel_process.dataset_path = "/home/luis/pojetos/python/un-product-models/dataset/raw/opt_110418/scraps/data_bkp/2018-11-04_data_bkp"
+parallel_process.pipeline = @base_pipeline
+parallel_process.workers = 6
+
+
+# Text Processing Pipes --------------------------------------------------
+
+valid_advertise.category = "celular-e-telefone"
+
+clean_base_advertise.process_pipeline = (@create_clean_text_field, @create_clean_text_field_inverted)
+create_clean_text_field.text_process_pipeline = (@full_default_process, @remove_same_info)
+create_clean_text_field_inverted.text_process_pipeline = (@full_default_process, @remove_same_info)
+
+
+# Pricing Encoder Parameters ---------------------------------------------
+
+PricingEncoder.model_folder = "processed/pricing"
+PricingEncoder.seq_max_len = 50
+PricingEncoder.max_len_char = 10
+PricingEncoder.maps_folder = "models/maps"
+PricingEncoder.update_maps = False
+
+
+# Mapping Encoder Parameters ---------------------------------------------
+
+MappingEncoder.model_folder = "processed/mapping"
+MappingEncoder.seq_max_len = 50
+MappingEncoder.max_len_char = 10
